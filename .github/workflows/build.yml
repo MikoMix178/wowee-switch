@@ -15,15 +15,11 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Switch libraries
+      - name: Check environment and build
         run: |
-          sed -i 's|#XferCommand = /usr/bin/curl.*|XferCommand = /usr/bin/curl -L -A "Mozilla/5.0" -C - -f -o %o %u|' /opt/devkitpro/pacman/etc/pacman.conf
-          dkp-pacman -Syu --noconfirm switch-dev switch-cmake switch-mesa switch-sdl2 switch-glm
-
-      - name: Build
-        run: |
+          ls -la /opt/devkitpro/portlibs/switch/lib || true
           mkdir -p build && cd build
-          /opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake ..
+          cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake ..
           make -j$(nproc)
 
       - uses: actions/upload-artifact@v5
