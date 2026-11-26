@@ -17,6 +17,7 @@ jobs:
 
       - name: Install Switch libraries
         run: |
+          sed -i 's|#XferCommand = /usr/bin/curl.*|XferCommand = /usr/bin/curl -L -A "Mozilla/5.0" -C - -f -o %o %u|' /opt/devkitpro/pacman/etc/pacman.conf
           dkp-pacman -Syu --noconfirm switch-dev switch-cmake switch-mesa switch-sdl2 switch-glm
 
       - name: Build
