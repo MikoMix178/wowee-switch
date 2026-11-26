@@ -9,7 +9,7 @@ jobs:
         DEVKITPRO: /opt/devkitpro
         DEVKITARM: /opt/devkitpro/devkitARM
         DEVKITPPC: /opt/devkitpro/devkitPPC
-        PATH: /opt/devkitpro/devkitA64/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        PATH: /opt/devkitpro/portlibs/switch/bin:/opt/devkitpro/devkitA64/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     steps:
       - uses: actions/checkout@v5
         with:
@@ -17,12 +17,12 @@ jobs:
 
       - name: Install Switch libraries
         run: |
-          dkp-pacman -Syu --noconfirm switch-dev switch-mesa switch-sdl2 switch-glm
+          dkp-pacman -Syu --noconfirm switch-dev switch-cmake switch-mesa switch-sdl2 switch-glm
 
       - name: Build
         run: |
           mkdir -p build && cd build
-          dkp-cmake ..
+          /opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake ..
           make -j$(nproc)
 
       - uses: actions/upload-artifact@v5
