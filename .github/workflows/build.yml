@@ -11,14 +11,8 @@ jobs:
         DEVKITPPC: /opt/devkitpro/devkitPPC
         PATH: /opt/devkitpro/portlibs/switch/bin:/opt/devkitpro/devkitA64/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: recursive
-
-      - name: Check nxvk requirements and releases
+      - name: Check build-nvk workflow and tools
         run: |
-          cat wowee/cmake/switch/nxvk.cmake
-          echo "=== RELEASES ==="
-          curl -s https://github.com | grep -E "tag_name|browser_download_url" || true
-          echo "=== WORKFLOW RUNS ==="
-          curl -s https://github.com | grep -E "id|status|conclusion" | head -n 20 || true
+          git clone https://github.com /tmp/nvk-switch
+          cat /tmp/nvk-switch/.github/workflows/build-nvk.yml
+          which ninja meson rustc cargo python3 cmake || true
