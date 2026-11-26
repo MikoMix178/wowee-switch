@@ -15,10 +15,22 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Check repo files and build
+      - name: Install prebuilt nvk-switch Vulkan driver
         run: |
-          ls -la
-          ls -la wowee || true
+          mkdir -p /tmp/nvk && cd /tmp/nvk
+          URL=$(curl -s https://github.com | grep "browser_download_url" | cut -d '"' -f 4 | head -n 1)
+          echo "Downloading: $URL"
+          curl -L -o nvk.tar.gz "$URL"
+          tar -xzf nvk.tar.gz || unzip -q nvk.tar.gz
+          find . -name "libvulkan.a" -exec cp {} /opt/devkitpro/portlibs/switch/lib/ \;
+          VULKAN_INC=$(find . -type d -name "vulkan" | head -n 1)
+          if [ -n "$VULKAN_INC" ]; then
+            cp -r "$VULKAN_INC" /opt/devkitpro/portlibs/switch/include/
+          fi
+          ls -la /opt/devkitpro/portlibs/switch/lib/libvulkan.a
+
+      - name: Build wowee-switch
+        run: |
           cmake -S "$PWD/wowee" -B build-switch -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE="$PWD/wowee/cmake/switch.toolchain.cmake" \
             -DCMAKE_BUILD_TYPE=Release
