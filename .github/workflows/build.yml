@@ -15,14 +15,17 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Check environment and build
+      - name: Check repo files and build
         run: |
-          ls -la /opt/devkitpro/portlibs/switch/lib || true
-          mkdir -p build && cd build
-          cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake ..
-          make -j$(nproc)
+          ls -la
+          ls -la wowee || true
+          cmake -S "$PWD/wowee" -B build-switch -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="$PWD/wowee/cmake/switch.toolchain.cmake" \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-switch --parallel "$(nproc)"
+          cmake --build build-switch --target switchpkg
 
       - uses: actions/upload-artifact@v5
         with:
           name: wowee-switch-nro
-          path: build/*.nro
+          path: build-switch/*.nro
